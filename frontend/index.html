@@ -33,7 +33,7 @@
     </section>
 
     <section class="section wrap" id="workbench">
-      <div class="section-heading"><div><div class="eyebrow">INTERACTIVE WORKSPACE</div><h2>Cryptography workbench</h2><p>Choose an algorithm, provide the required data and inspect the workflow.</p></div><span class="status-chip"><i></i> FRONTEND PREVIEW</span></div>
+      <div class="section-heading"><div><div class="eyebrow">INTERACTIVE WORKSPACE</div><h2>Cryptography workbench</h2><p>Choose an algorithm, provide the required data and inspect the workflow.</p></div><span class="status-chip"><i></i> API CONNECTED</span></div>
       <div class="workbench">
         <aside class="work-sidebar">
           <div class="side-label">SELECT ALGORITHM</div>
@@ -55,10 +55,10 @@
           <div class="field input-area"><div class="area-heading"><label for="payload" class="field-label" id="payload-label">ENCRYPTED TEXT / CIPHERTEXT <em>INPUT</em></label><span id="char-count">0 characters</span></div><textarea id="payload" spellcheck="false" placeholder="Paste your encrypted text here. For AES-GCM, enter the ciphertext as hexadecimal."></textarea><div class="area-footer"><span><span class="lock-symbol">⌑</span> Input stays in this browser preview</span><button type="button" class="clear-btn" id="clear-input">Clear input ×</button></div></div>
 
           <div class="field-grid extra-fields" id="extra-fields"></div>
-          <div class="action-row"><button class="button button-light action-button" type="button" id="run-action"><span id="action-label">Decrypt data</span><span>→</span></button><button class="button button-outline" type="button" id="load-example">Load example</button><span class="action-hint" id="action-hint">Backend connection required for this algorithm.</span></div>
+          <div class="action-row"><button class="button button-light action-button" type="button" id="run-action"><span id="action-label">Decrypt data</span><span>→</span></button><button class="button button-outline" type="button" id="generate-key">Generate key</button><button class="button button-outline" type="button" id="load-example">Load example</button><span class="action-hint" id="action-hint">Connecting to API…</span></div>
 
           <div class="result-panel" aria-live="polite"><div class="result-head"><div><span class="work-kicker">RESULT</span><h4 id="result-title">Decrypted output</h4></div><span class="result-state" id="result-state">WAITING FOR INPUT</span></div><div class="result-body" id="result-body">Your output will appear here after the operation is connected and completed.</div><div class="result-foot"><span id="result-footnote">No cryptographic operation has been performed.</span><button type="button" class="copy-btn" id="copy-result" disabled>Copy output ↗</button></div></div>
-          <div class="integration-alert"><span>!</span><p><b>Frontend-only preview.</b> The supplied ZIP contains Python modules, not a web API. This interface does not pretend to decrypt RSA or Hill ciphertext. AES-GCM decryption can run locally in a browser when valid key, nonce, tag and ciphertext values are supplied.</p></div>
+          <div class="integration-alert"><span>!</span><p><b>Educational cryptography.</b> This workbench sends operations to the local Flask API. RSA uses textbook RSA without padding and Hill cipher is not secure. Do not use this demo to protect sensitive data.</p></div>
         </div>
       </div>
     </section>

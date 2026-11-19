@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import sympy
 
-from generate_hill import generate_key
+from hill.generate_hill import generate_key
 
 
 def clean_and_pad_text(text: str, block_size: int, pad_char: str = "X") -> str:

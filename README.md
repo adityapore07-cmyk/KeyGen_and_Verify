@@ -1,11 +1,12 @@
 # KeyGen_and_Verify
 
-A small educational Python project that demonstrates two cryptographic building blocks used in real systems today:
+A learning project with a browser workbench and a Flask API for experimenting with three ciphers:
 
-- **RSA**: public-key (asymmetric) key generation, encryption and decryption, built to show the underlying math.
-- **AES-256-GCM**: modern authenticated symmetric encryption, which encrypts data *and* verifies it has not been tampered with.
+- **RSA**: public-key key generation, encryption and decryption.
+- **AES-256-GCM**: authenticated symmetric encryption with tamper detection.
+- **Hill cipher**: a classical matrix-based cipher for learning about modular arithmetic.
 
-Together they mirror how secure systems such as HTTPS/TLS work: RSA (or a similar scheme) shares a secret key, and AES encrypts the actual data with it.
+The web interface sends operations to the local Flask server. The command-line Python modules and Jupyter notebooks can also be used independently.
 
 ---
 
@@ -15,36 +16,46 @@ Together they mirror how secure systems such as HTTPS/TLS work: RSA (or a simila
 2. [Project Structure](#project-structure)
 3. [Installation](#installation)
 4. [Usage](#usage)
-5. [How RSA Works](#how-rsa-works)
-6. [How AES-256-GCM Works](#how-aes-256-gcm-works)
-7. [RSA vs AES](#rsa-vs-aes)
-8. [Security Notes](#security-notes)
-9. [License](#license)
+5. [API Reference](#api-reference)
+6. [How the Algorithms Work](#how-the-algorithms-work)
+7. [Security Notes](#security-notes)
+8. [License](#license)
 
 ---
 
 ## Features
 
-- RSA key pair generation (`n`, `e`, `d`) using PyCryptodome
-- RSA encryption and decryption of short messages
-- AES-256-GCM key generation, encryption and decryption
-- Built-in tamper detection through the GCM authentication tag
-- Jupyter notebook versions of the scripts for step-by-step exploration
+- A Flask server that serves the frontend and JSON API
+- Browser workbench for RSA, AES-256-GCM and Hill cipher operations
+- RSA key pair generation and short-message encryption/decryption
+- AES key generation, encryption and authenticated decryption
+- Hill key matrix generation, encryption and decryption
+- Example Jupyter notebooks for step-by-step exploration
 
 ---
 
 ## Project Structure
 
-| File | Description |
-|---|---|
-| `generate.py` | Generates an RSA key pair |
-| `encrypt.py` | Encrypts a message with RSA |
-| `decrypt.py` | Decrypts an RSA message and prints the original, encrypted and decrypted text |
-| `generate_aes.py` | Generates a random 256-bit AES key |
-| `encrypt_aes.py` | Encrypts data with AES-256-GCM |
-| `decrypt_aes.py` | Decrypts and verifies data with AES-256-GCM |
-| `*.ipynb` | Notebook versions of the scripts |
-| `requirements.txt` | Python dependencies |
+| Path / file | Description |
+| --- | --- |
+| `app.py` | Flask application, static frontend server and `/api` endpoints |
+| `frontend/index.html` | Workbench page and explanatory content |
+| `frontend/app.js` | Workbench behavior and API requests |
+| `frontend/styles.css` | Frontend styling |
+| `aes/` | AES-256-GCM key generation, encryption, decryption and tests |
+| `aes/generate_aes.py` | AES key generation |
+| `aes/encrypt_aes.py`, `aes/decrypt_aes.py` | AES-GCM encryption and authenticated decryption |
+| `aes/*_aes.ipynb` | AES notebooks |
+| `aes/test_aes.py` | AES tests |
+| `rsa/` | RSA key generation, encryption and decryption modules and notebooks |
+| `rsa/generate_rsa.py` | RSA key pair generation |
+| `rsa/encrypt_rsa.py`, `rsa/decrypt_rsa.py` | RSA encryption and decryption |
+| `rsa/*_rsa.ipynb` | RSA notebooks |
+| `hill/` | Hill cipher key generation, encryption and decryption modules and notebooks |
+| `hill/generate_hill.py` | Hill key matrix generation and modular inverse helper |
+| `hill/encrypt_hill.py`, `hill/decrypt_hill.py` | Hill cipher encryption and decryption |
+| `hill/*_hill.ipynb` | Hill cipher notebooks |
+| `requirements.txt` | Python package dependencies, including Flask |
 | `LICENSE` | MIT license |
 
 ---
@@ -53,17 +64,80 @@ Together they mirror how secure systems such as HTTPS/TLS work: RSA (or a simila
 
 Requires Python 3.8 or newer.
 
+#### Windows
+
 ```bash
 git clone https://github.com/adityapore07-cmyk/KeyGen_and_Verify.git
 cd KeyGen_and_Verify
+python -m venv .env
+.env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Main dependency: [`pycryptodome`](https://pycryptodome.readthedocs.io/)
+#### MacOS
+
+```bash
+git clone https://github.com/adityapore07-cmyk/KeyGen_and_Verify.git
+cd KeyGen_and_Verify
+python3 -m venv .env
+source .env\Scripts\activate
+pip install -r requirements.txt
+```
+
+#### Linux
+
+```bash
+git clone https://github.com/adityapore07-cmyk/KeyGen_and_Verify.git
+cd KeyGen_and_Verify
+python3 -m venv .env
+source .env/bin/activate
+pip install -r requirements.txt
+```
+
+Main dependencies: [`pycryptodome`](https://pycryptodome.readthedocs.io/), [`sympy`](https://www.sympy.org/en/index.html), [`flask`](https://flask.palletsprojects.com/en/stable/)
 
 ---
 
 ## Usage
+
+### Run the web workbench
+
+#### Windows
+
+```bash
+.env\Scripts\activate
+python app.py
+```
+
+#### MacOS
+
+```bash
+source .env\Scripts\activate
+python3 app.py
+```
+
+#### Linux
+
+```bash
+source .env/bin/activate
+python3 app.py
+```
+
+Open <http://127.0.0.1:5000>. The Flask server serves the frontend and provides
+JSON endpoints for health checks and AES, RSA and Hill key generation,
+encryption and decryption. For example:
+
+```bash
+curl http://127.0.0.1:5000/api/health
+curl -X POST http://127.0.0.1:5000/api/aes/keygen \
+  -H 'Content-Type: application/json' -d '{"bits":256}'
+```
+
+The routes follow `/api/<algorithm>/<operation>` for `keygen`, `encrypt` and
+`decrypt` (`algorithm` is `aes`, `rsa` or `hill`), with `GET /api/health`.
+AES values use hexadecimal strings; RSA key parameters are decimal strings;
+Hill matrices can be supplied as `3,3;2,5` or as nested JSON arrays. RSA here
+is textbook RSA without padding and is only suitable for this learning demo.
 
 ### RSA
 
@@ -101,73 +175,53 @@ Hello, AES!
 
 If the ciphertext, nonce or tag is changed in any way, decryption raises a `ValueError` instead of returning corrupted data.
 
----
+## API Reference
 
-## How RSA Works
+All operation endpoints accept and return JSON. The browser uses the same paths listed here.
 
-RSA is based on the fact that multiplying two large primes is easy, but factoring their product is extremely hard.
+| Method and path | Purpose |
+| --- | --- |
+| `GET /api/health` | Check that the server is running and list supported algorithms |
+| `POST /api/<algorithm>/keygen` | Generate key material |
+| `POST /api/<algorithm>/encrypt` | Encrypt plaintext |
+| `POST /api/<algorithm>/decrypt` | Decrypt ciphertext |
 
-**Key generation**
+Replace `<algorithm>` with `aes`, `rsa` or `hill`. Key generation accepts optional `bits` for AES (128, 192 or 256) and RSA (1024–4096, in multiples of 256), or optional `size` for Hill (2–8). For example:
 
-1. Pick two large primes `p` and `q`.
-2. Compute `n = p × q`.
-3. Compute `φ(n) = (p − 1)(q − 1)`.
-4. Choose a public exponent `e` (commonly 65537) that is coprime with `φ(n)`.
-5. Compute the private exponent `d` such that `e × d ≡ 1 (mod φ(n))`.
-
-The public key is `(n, e)` and the private key is `(n, d)`.
-
-**Encryption and decryption**
-
-```
-ciphertext = message^e mod n
-message    = ciphertext^d mod n
+```bash
+curl -X POST http://127.0.0.1:5000/api/aes/encrypt \
+  -H 'Content-Type: application/json' \
+  -d '{"key":"<64 hex characters>","plaintext":"Hello"}'
 ```
 
-**Tiny example:** `p = 3`, `q = 11`, so `n = 33` and `φ = 20`. With `e = 3` we get `d = 7`. Encrypting `4` gives `4³ mod 33 = 31`, and decrypting gives `31⁷ mod 33 = 4`.
+AES keys, nonces, tags and ciphertext are hexadecimal strings. AES decryption requires `key`, `nonce`, `tag` and `ciphertext`. RSA encryption requires `plaintext` and a `key` object with decimal-string fields `n` and `e`; decryption requires `ciphertext` and a `key` object with `n` and `d`. Hill operations use a `key` matrix, encoded as a string such as `3,3;2,5` or as nested arrays, alongside `plaintext` or `ciphertext`.
 
----
+Invalid input returns an HTTP 400 response with a JSON `error` field. Unknown algorithms return HTTP 404.
 
-## How AES-256-GCM Works
+## How the Algorithms Work
 
-AES is a symmetric block cipher: the same secret key encrypts and decrypts. **GCM** (Galois/Counter Mode) turns it into an *authenticated* cipher.
+### RSA
 
-| Component | Purpose |
-|---|---|
-| **Key** (256 bits) | The shared secret. Must be kept private. |
-| **Nonce** (96 bits) | A unique value per message. Must never be reused with the same key. |
-| **Ciphertext** | The encrypted data, the same length as the plaintext. |
-| **Tag** (128 bits) | An authentication tag proving the data and nonce were not altered. |
+RSA creates a public key `(n, e)` and private key `(n, d)`. Encryption raises the message integer to `e` modulo `n`; decryption raises the ciphertext to `d` modulo `n`. The message must fit below the modulus. This project uses textbook RSA without padding, solely to demonstrate the underlying math.
 
-Why it is widely used today:
+### AES-256-GCM
 
-- It is the default cipher in TLS 1.3 and HTTPS.
-- It is used in WPA3 Wi-Fi, VPNs and disk encryption.
-- Modern CPUs have hardware instructions (AES-NI) that make it very fast.
-- It provides both confidentiality and integrity in one step.
+AES uses a shared secret key. GCM adds authentication to encryption: each operation uses a nonce and returns a tag along with the ciphertext. Decryption verifies the tag before releasing plaintext. Never reuse a nonce with the same key.
 
----
+### Hill cipher
 
-## RSA vs AES
-
-| | RSA | AES-256-GCM |
-|---|---|---|
-| Type | Asymmetric (public/private keys) | Symmetric (one shared key) |
-| Speed | Slow | Very fast |
-| Message size | Limited by key size | Practically unlimited |
-| Typical role | Key exchange, digital signatures | Bulk data encryption |
-| Tamper detection | Needs signatures or padding | Built in (auth tag) |
+The Hill cipher maps letters to numbers, groups them into blocks and multiplies each block by a square key matrix modulo 26. The matrix must be invertible modulo 26 for decryption. The implementation removes non-letter characters and pads plaintext to a full block with `X`.
 
 ---
 
 ## Security Notes
 
-This project is for **learning**, not production use.
+This project is for **learning**, not production use. The API binds to `127.0.0.1` by default and should not be exposed to an untrusted network.
 
-- The RSA implementation is "textbook RSA" without padding (such as OAEP), which is insecure in practice.
+- The RSA implementation is "textbook RSA" without padding (such as OAEP), which is insecure in practice. Its default 1024-bit key size is also too small for modern security.
 - RSA messages must be smaller than the modulus `n`.
-- 1024-bit RSA keys are considered weak; use 2048 bits or more in real systems.
 - For AES-GCM, never reuse a nonce with the same key.
+- The Hill cipher is a classical teaching cipher and provides no modern security.
 - Keep keys out of source control and never log them.
 - For real applications, use well-reviewed libraries and protocols such as TLS rather than writing your own.
 

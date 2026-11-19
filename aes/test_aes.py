@@ -1,9 +1,9 @@
 """Tests for the AES-GCM modules (run with: python -m pytest test_aes.py -v)."""
 import pytest
 
-from decrypt_aes import decrypt
-from encrypt_aes import encrypt
-from generate_aes import generate_key
+from aes.decrypt_aes import decrypt
+from aes.encrypt_aes import encrypt
+from aes.generate_aes import generate_key
 
 
 def test_round_trip():

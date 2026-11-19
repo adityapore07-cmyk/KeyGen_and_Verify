@@ -2,8 +2,8 @@ from typing import List
 
 import sympy
 
-from encrypt_hill import encrypt_message
-from generate_hill import matrix_mod_inverse
+from hill.encrypt_hill import encrypt_message
+from hill.generate_hill import matrix_mod_inverse
 
 
 def decrypt(key: List[List[int]], ciphertext: str) -> str:

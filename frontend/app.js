@@ -1,73 +1,117 @@
 const $ = (id) => document.getElementById(id);
+const API_ENDPOINTS = {
+  health: '/api/health',
+  aes: { keygen: '/api/aes/keygen', encrypt: '/api/aes/encrypt', decrypt: '/api/aes/decrypt' },
+  rsa: { keygen: '/api/rsa/keygen', encrypt: '/api/rsa/encrypt', decrypt: '/api/rsa/decrypt' },
+  hill: { keygen: '/api/hill/keygen', encrypt: '/api/hill/encrypt', decrypt: '/api/hill/decrypt' }
+};
 const state = { algorithm: 'aes', mode: 'decrypt', result: '' };
 const info = {
-  aes: { kicker: 'SYMMETRIC ENCRYPTION', title: 'AES-256-GCM', desc: 'One shared secret key encrypts and authenticates your data.', placeholder: 'Paste AES-GCM ciphertext as hexadecimal. The nonce and authentication tag are entered above.', label: 'ENCRYPTED TEXT / CIPHERTEXT' },
-  rsa: { kicker: 'ASYMMETRIC ENCRYPTION', title: 'RSA', desc: 'A public key encrypts; the matching private key decrypts.', placeholder: 'Paste the RSA ciphertext integer here. The supplied Python example currently demonstrates a local round-trip, not a web API.', label: 'ENCRYPTED TEXT / CIPHERTEXT' },
-  hill: { kicker: 'CLASSICAL SUBSTITUTION', title: 'Hill Cipher', desc: 'A square key matrix transforms blocks of letters modulo 26.', placeholder: 'Paste the Hill cipher text here (letters A–Z).', label: 'CIPHERTEXT' }
+  aes: { kicker: 'SYMMETRIC ENCRYPTION', title: 'AES-256-GCM', desc: 'One shared secret key encrypts and authenticates your data.', placeholder: 'Enter ciphertext as hexadecimal.', label: 'ENCRYPTED TEXT / CIPHERTEXT' },
+  rsa: { kicker: 'ASYMMETRIC ENCRYPTION', title: 'RSA', desc: 'A public key encrypts; the matching private key decrypts.', placeholder: 'Enter the RSA ciphertext integer.', label: 'ENCRYPTED TEXT / CIPHERTEXT' },
+  hill: { kicker: 'CLASSICAL SUBSTITUTION', title: 'Hill Cipher', desc: 'A square key matrix transforms blocks of letters modulo 26.', placeholder: 'Enter the Hill ciphertext (letters A–Z).', label: 'CIPHERTEXT' }
 };
+
 function render() {
   const a = info[state.algorithm];
+  const savedValues = {};
+  ['aes-key', 'aes-nonce', 'aes-tag', 'rsa-key', 'rsa-modulus', 'hill-key'].forEach(id => {
+    const input = $(id);
+    if (input) savedValues[id] = input.value;
+  });
   $('algo-kicker').textContent = a.kicker; $('algo-title').textContent = a.title; $('algo-desc').textContent = a.desc;
-  $('payload').placeholder = a.placeholder; $('payload-label').innerHTML = `${a.label} <em>INPUT</em>`;
+  $('payload').placeholder = state.mode === 'encrypt' ? 'Enter plaintext to encrypt.' : a.placeholder;
+  $('payload-label').innerHTML = `${state.mode === 'encrypt' ? 'PLAINTEXT' : a.label} <em>INPUT</em>`;
   document.querySelectorAll('.algorithm-choice').forEach(b => b.classList.toggle('active', b.dataset.algorithm === state.algorithm));
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
   $('action-label').textContent = state.mode === 'decrypt' ? 'Decrypt data' : 'Encrypt data';
   $('result-title').textContent = state.mode === 'decrypt' ? 'Decrypted output' : 'Encrypted output';
   $('key-fields').innerHTML = fieldsForAlgorithm();
-  $('action-hint').textContent = state.algorithm === 'aes' ? 'AES-GCM can run locally in this browser.' : 'Python backend integration required.';
+  Object.entries(savedValues).forEach(([id, value]) => { if ($(id)) $(id).value = value; });
+  $('action-hint').textContent = 'Operations run through the local Flask API.';
   $('result-body').textContent = 'Your output will appear here after the operation is completed.';
   $('result-state').textContent = 'WAITING FOR INPUT'; $('result-state').classList.remove('success');
   $('result-footnote').textContent = 'No cryptographic operation has been performed.'; $('copy-result').disabled = true; state.result = '';
 }
+
 function fieldsForAlgorithm() {
-  if (state.algorithm === 'aes') return `<label class="field full"><span class="field-label">AES SECRET KEY <em>HEX</em></span><input id="aes-key" type="password" autocomplete="off" spellcheck="false" placeholder="64 hex characters for AES-256"><small>32 bytes · Use the exact key that was used for encryption.</small></label><label class="field"><span class="field-label">NONCE <em>HEX</em></span><input id="aes-nonce" autocomplete="off" spellcheck="false" placeholder="24 hex characters"></label><label class="field"><span class="field-label">AUTHENTICATION TAG <em>HEX</em></span><input id="aes-tag" autocomplete="off" spellcheck="false" placeholder="32 hex characters"></label>`;
-  if (state.algorithm === 'rsa') return `<label class="field full"><span class="field-label">RSA KEY PARAMETERS</span><input id="rsa-key" type="password" autocomplete="off" placeholder="Private exponent d (decrypt) or public exponent e (encrypt)"><small>Key modulus n is also required. This preview does not send keys to a server.</small></label><label class="field full"><span class="field-label">MODULUS n</span><input id="rsa-modulus" type="password" autocomplete="off" placeholder="RSA modulus n"></label>`;
-  return `<label class="field full"><span class="field-label">KEY MATRIX</span><input id="hill-key" autocomplete="off" placeholder="Example: 3,3;2,5"><small>Rows separated by semicolons; values separated by commas. Matrix must be invertible modulo 26.</small></label>`;
+  if (state.algorithm === 'aes') return `<label class="field full"><span class="field-label">AES SECRET KEY <em>HEX</em></span><input id="aes-key" type="password" autocomplete="off" spellcheck="false" placeholder="64 hex characters"><button type="button" class="copy-btn" data-copy="aes-key">Copy key</button><small>32 bytes · Generate a key or enter an existing one.</small></label>${state.mode === 'decrypt' ? '<label class="field"><span class="field-label">NONCE <em>HEX</em></span><input id="aes-nonce" autocomplete="off" spellcheck="false" placeholder="24 hex characters"></label><label class="field"><span class="field-label">AUTHENTICATION TAG <em>HEX</em></span><input id="aes-tag" autocomplete="off" spellcheck="false" placeholder="32 hex characters"></label>' : ''}`;
+  if (state.algorithm === 'rsa') return `<label class="field full"><span class="field-label">${state.mode === 'encrypt' ? 'PUBLIC KEY' : 'PRIVATE KEY'}</span><input id="rsa-key" type="password" autocomplete="off" placeholder="${state.mode === 'encrypt' ? 'Public exponent e' : 'Private exponent d'}"><button type="button" class="copy-btn" data-copy="rsa-key">Copy ${state.mode === 'encrypt' ? 'exponent' : 'exponent'}</button><small>Supply the matching key parameter and modulus n.</small></label><label class="field full"><span class="field-label">MODULUS n</span><input id="rsa-modulus" type="password" autocomplete="off" placeholder="RSA modulus n"><button type="button" class="copy-btn" data-copy="rsa-modulus">Copy modulus</button></label>`;
+  return `<label class="field full"><span class="field-label">KEY MATRIX</span><input id="hill-key" autocomplete="off" placeholder="Example: 3,3;2,5"><small>Rows separated by semicolons; values separated by commas.</small></label>`;
 }
-function hexToBytes(value, label) {
-  const clean = value.trim().replace(/^0x/i, '').replace(/\s+/g, '');
-  if (!clean || clean.length % 2 || !/^[0-9a-f]+$/i.test(clean)) throw new Error(`${label} must be valid hexadecimal with an even number of characters.`);
-  return Uint8Array.from(clean.match(/../g), b => parseInt(b, 16));
-}
-function bytesToHex(bytes) { return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join(''); }
-async function aesDecrypt() {
-  const key = hexToBytes($('aes-key').value, 'AES key');
-  const nonce = hexToBytes($('aes-nonce').value, 'Nonce');
-  const tag = hexToBytes($('aes-tag').value, 'Authentication tag');
-  const cipher = hexToBytes($('payload').value, 'Ciphertext');
-  if (![16,24,32].includes(key.length)) throw new Error('AES key must be 16, 24 or 32 bytes. For AES-256, use 32 bytes.');
-  if (nonce.length !== 12) throw new Error('This project uses a 12-byte (96-bit) GCM nonce.');
-  if (tag.length !== 16) throw new Error('This project uses a 16-byte (128-bit) GCM authentication tag.');
-  const cryptoKey = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
-  const combined = new Uint8Array(cipher.length + tag.length); combined.set(cipher); combined.set(tag, cipher.length);
-  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: nonce, tagLength: 128 }, cryptoKey, combined);
-  return new TextDecoder('utf-8', { fatal: true }).decode(plain);
+
+async function api(path, body) {
+  const response = await fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {});
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+  return data;
 }
 function showResult(text, success, footnote) {
-  state.result = text; $('result-body').textContent = text; $('result-state').textContent = success ? 'VERIFIED' : 'NEEDS BACKEND';
+  state.result = text; $('result-body').textContent = text; $('result-state').textContent = success ? 'SUCCESS' : 'ERROR';
   $('result-state').classList.toggle('success', success); $('result-footnote').textContent = footnote; $('copy-result').disabled = !success;
 }
+function getKey() {
+  if (state.algorithm === 'aes') return $('aes-key').value.trim();
+  if (state.algorithm === 'rsa') return { n: $('rsa-modulus').value.trim(), [state.mode === 'encrypt' ? 'e' : 'd']: $('rsa-key').value.trim() };
+  return $('hill-key').value.trim();
+}
+function getPayload() { return $('payload').value.trim(); }
+
 document.querySelectorAll('.algorithm-choice').forEach(b => b.addEventListener('click', () => { state.algorithm = b.dataset.algorithm; render(); }));
 document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; render(); }));
 $('payload').addEventListener('input', () => $('char-count').textContent = `${$('payload').value.length.toLocaleString()} characters`);
 $('clear-input').addEventListener('click', () => { $('payload').value = ''; $('char-count').textContent = '0 characters'; });
+document.addEventListener('click', async event => {
+  const button = event.target.closest('[data-copy]');
+  if (!button) return;
+  try {
+    await navigator.clipboard.writeText($(button.dataset.copy).value);
+    button.textContent = 'Copied ✓';
+    setTimeout(() => { button.textContent = button.dataset.copy === 'rsa-modulus' ? 'Copy modulus' : button.dataset.copy === 'aes-key' ? 'Copy key' : 'Copy exponent'; }, 1200);
+  } catch { button.textContent = 'Copy unavailable'; }
+});
+$('generate-key').addEventListener('click', async () => {
+  try {
+    const data = await api(API_ENDPOINTS[state.algorithm].keygen, {});
+    if (state.algorithm === 'aes') $('aes-key').value = data.key;
+    else if (state.algorithm === 'rsa') {
+      $('rsa-modulus').value = data.public_key.n;
+      $('rsa-key').value = state.mode === 'encrypt' ? data.public_key.e : data.private_key.d;
+    } else $('hill-key').value = data.key.map(row => row.join(',')).join(';');
+    showResult('Key generated. Save it securely; you will need the matching key to decrypt.', true, 'Key generation completed by the API.');
+  } catch (error) { showResult(error.message, false, 'Key generation failed.'); }
+});
 $('load-example').addEventListener('click', () => {
   if (state.algorithm === 'aes') {
-    $('payload').value = '000000000000000000000000'; $('aes-key').value = '0000000000000000000000000000000000000000000000000000000000000000'; $('aes-nonce').value = '000000000000000000000000'; $('aes-tag').value = '00000000000000000000000000000000';
-  } else if (state.algorithm === 'rsa') { $('payload').value = '123456789'; $('rsa-key').value = ''; $('rsa-modulus').value = ''; }
-  else { $('payload').value = 'GDD'; $('hill-key').value = '3,3;2,5'; }
-  $('char-count').textContent = `${$('payload').value.length} characters`; showResult('Example loaded. This is sample input only; it is not a valid encrypted message for your own key.', false, 'Example data loaded; no operation performed.');
+    $('aes-key').value = '0000000000000000000000000000000000000000000000000000000000000000';
+    $('payload').value = state.mode === 'encrypt' ? 'Hello, AES!' : '';
+    if (state.mode === 'decrypt') { $('aes-nonce').value = ''; $('aes-tag').value = ''; }
+  } else if (state.algorithm === 'rsa') { $('payload').value = 'Hello'; $('rsa-key').value = ''; $('rsa-modulus').value = ''; }
+  else { $('payload').value = 'HELLO'; $('hill-key').value = '3,3;2,5'; }
+  $('char-count').textContent = `${$('payload').value.length} characters`;
+  showResult('Example input loaded. Generate a key or enter matching key material to run the operation.', false, 'Example input loaded; no operation performed.');
 });
 $('run-action').addEventListener('click', async () => {
-  const payload = $('payload').value.trim();
-  if (!payload) { showResult('Enter the required input first.', false, 'Missing input.'); return; }
-  if (state.algorithm === 'aes' && state.mode === 'decrypt') {
-    try { const plain = await aesDecrypt(); showResult(plain, true, 'AES-GCM authentication succeeded. Plaintext was released only after tag verification.'); }
-    catch (e) { showResult(`Decryption failed: ${e.message}${e.name === 'OperationError' ? ' The key, nonce, ciphertext or tag may be incorrect or the data may have been tampered with.' : ''}`, false, 'No plaintext was released.'); }
-    return;
-  }
-  const msg = state.algorithm === 'aes' ? 'AES encryption is not enabled in this preview. The Python project can perform it with generate_aes.py and encrypt_aes.py.' : state.algorithm === 'rsa' ? 'RSA operations need a backend adapter. The supplied Python RSA example generates a fresh key pair inside encrypt_message(), so it cannot decrypt arbitrary pasted ciphertext with a separately supplied key as this UI stands.' : 'Hill cipher operations need a backend adapter. The Python functions require the matching invertible key matrix and apply letter cleaning/padding rules.';
-  showResult(msg, false, 'No cryptographic operation was performed.');
+  try {
+    const key = getKey();
+    const payload = getPayload();
+    if (!payload) throw new Error('Enter the required input first.');
+    let data;
+    if (state.mode === 'encrypt') {
+      data = await api(API_ENDPOINTS[state.algorithm].encrypt, { plaintext: payload, key });
+      if (state.algorithm === 'aes') {
+        $('aes-nonce').value = data.nonce || '';
+        $('aes-tag').value = data.tag || '';
+        showResult(`Ciphertext (hex): ${data.ciphertext}\nNonce (hex): ${data.nonce}\nTag (hex): ${data.tag}`, true, 'AES-GCM encryption completed. Keep the key, nonce and tag with the ciphertext.');
+      } else showResult(data.ciphertext, true, 'Encryption completed by the API.');
+    } else {
+      const body = { ciphertext: payload, key };
+      if (state.algorithm === 'aes') { body.nonce = $('aes-nonce').value.trim(); body.tag = $('aes-tag').value.trim(); }
+      data = await api(API_ENDPOINTS[state.algorithm].decrypt, body);
+      showResult(data.plaintext, true, state.algorithm === 'aes' ? 'Authentication succeeded. Plaintext was returned only after tag verification.' : 'Decryption completed by the API.');
+    }
+  } catch (error) { showResult(error.message, false, 'Operation failed.'); }
 });
-$('copy-result').addEventListener('click', async () => { if (!state.result) return; try { await navigator.clipboard.writeText(state.result); $('copy-result').textContent = 'Copied ✓'; setTimeout(() => $('copy-result').textContent = 'Copy output ↗', 1400); } catch { $('copy-result').textContent = 'Copy unavailable'; } });
+$('copy-result').addEventListener('click', async () => { if (!$('result-body').textContent) return; try { await navigator.clipboard.writeText($('result-body').textContent); $('copy-result').textContent = 'Copied ✓'; setTimeout(() => $('copy-result').textContent = 'Copy output ↗', 1400); } catch { $('copy-result').textContent = 'Copy unavailable'; } });
+api(API_ENDPOINTS.health).then(() => { $('action-hint').textContent = 'Connected to the local Flask API.'; }).catch(() => { $('action-hint').textContent = 'Start the Flask server to connect.'; });
 render();

@@ -1,4 +1,4 @@
-from generate import generate_new_pair
+from rsa.generate_rsa import generate_new_pair
 
 def encrypt_message(text):
     key = generate_new_pair(1024)

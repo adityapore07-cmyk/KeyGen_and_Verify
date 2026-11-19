@@ -1,4 +1,4 @@
-from encrypt import encrypt_message
+from rsa.encrypt_rsa import encrypt_message
 
 def decrypt(msg: str):
     encrypt, n, d = encrypt_message(msg.encode())
