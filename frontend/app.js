@@ -180,6 +180,7 @@ document.addEventListener("click", async (event) => {
 $("generate-key").addEventListener("click", async () => {
   try {
     const data = await api(API_ENDPOINTS[state.algorithm].keygen, {});
+    localStorage.setItem("key", JSON.stringify(data));
     if (state.algorithm === "aes") $("aes-key").value = data.key;
     else if (state.algorithm === "rsa") {
       $("rsa-modulus").value = data.public_key.n;
@@ -195,6 +196,31 @@ $("generate-key").addEventListener("click", async () => {
     showResult(error.message, false, "Key generation failed.");
   }
 });
+
+$("decrypt-rsa").addEventListener("click", async () => {
+  try {
+    const data = JSON.parse(localStorage.getItem("key"));
+    if (state.algorithm === "rsa") {
+      $("rsa-modulus").value = data.public_key.n;
+      $("rsa-key").value = data.private_key.d;
+    }
+  } catch (error) {
+    showResult(error.message, false, "Key changing failed.");
+  }
+});
+
+$("encrypt-rsa").addEventListener("click", async () => {
+  try {
+    const data = JSON.parse(localStorage.getItem("key"));
+    if (state.algorithm === "rsa") {
+      $("rsa-modulus").value = data.public_key.n;
+      $("rsa-key").value = data.public_key.e;
+    }
+  } catch (error) {
+    showResult(error.message, false, "Key changing failed.");
+  }
+});
+
 $("load-example").addEventListener("click", () => {
   if (state.algorithm === "aes") {
     $("aes-key").value =

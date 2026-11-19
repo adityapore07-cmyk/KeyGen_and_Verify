@@ -139,7 +139,7 @@ def decrypt(algorithm: str):
         message = pow(int(ciphertext), d, n)
         length = max(1, (message.bit_length() + 7) // 8)
         try:
-            plaintext = message.to_bytes(length, "big").decode("utf-8")
+            plaintext = message.to_bytes(length, byteorder="big").decode("utf-8")
         except UnicodeDecodeError as exc:
             raise ValueError("Decrypted bytes are not valid UTF-8") from exc
         return jsonify(plaintext=plaintext)

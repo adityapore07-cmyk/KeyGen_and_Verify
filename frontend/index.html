@@ -1,91 +1,432 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0a0a0a">
-  <meta name="description" content="A learning interface for RSA, AES-256-GCM and Hill cipher key generation, encryption and decryption.">
-  <title>KeyGen — Cryptography Workbench</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#top" aria-label="KeyGen home"><span class="brand-mark">⌬</span><span>keygen<span class="brand-dot">.</span></span></a>
-    <nav aria-label="Main navigation"><a href="#workbench">Workbench</a><a href="#how-it-works">How it works</a><a href="#security">Security</a></nav>
-    <span class="top-tag"><i></i> EDUCATIONAL TOOLKIT</span>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta
+      name="description"
+      content="A learning interface for RSA, AES-256-GCM and Hill cipher key generation, encryption and decryption."
+    />
+    <title>KeyGen — Cryptography Workbench</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="KeyGen home"
+        ><span class="brand-mark">⌬</span
+        ><span>keygen<span class="brand-dot">.</span></span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#workbench">Workbench</a
+        ><a href="#how-it-works">How it works</a
+        ><a href="#security">Security</a>
+      </nav>
+      <span class="top-tag"><i></i> EDUCATIONAL TOOLKIT</span>
+    </header>
 
-  <main id="top">
-    <section class="hero wrap">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-line"></span> CRYPTOGRAPHY, MADE VISIBLE</div>
-        <h1>Understand the<br><span>keys to your data.</span></h1>
-        <p class="hero-lede">Explore public-key and symmetric encryption through one focused workspace. Inspect the inputs, understand each step, and learn what protects—or exposes—your information.</p>
-        <div class="hero-actions"><a class="button button-light" href="#workbench">Open workbench <span>↗</span></a><a class="text-link" href="#how-it-works">Explore the process <span>→</span></a></div>
-        <div class="hero-meta"><span><b>03</b> algorithms</span><span><b>01</b> workspace</span><span><b>100%</b> learning-focused</span></div>
-      </div>
-      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="hex hex-outer"></div><div class="hex hex-mid"></div><div class="hex hex-inner"></div><div class="core">K<span>+</span></div><div class="art-label label-top">KEY PAIR / 01</div><div class="art-label label-bottom">ENCRYPT → VERIFY → DECRYPT</div></div>
-    </section>
-
-    <section class="algorithm-strip wrap" aria-label="Supported algorithms">
-      <div><span class="strip-index">01</span><strong>RSA</strong><small>Asymmetric · Public / Private</small></div>
-      <div><span class="strip-index">02</span><strong>AES-256-GCM</strong><small>Symmetric · Authenticated</small></div>
-      <div><span class="strip-index">03</span><strong>HILL CIPHER</strong><small>Classical · Matrix-based</small></div>
-    </section>
-
-    <section class="section wrap" id="workbench">
-      <div class="section-heading"><div><div class="eyebrow">INTERACTIVE WORKSPACE</div><h2>Cryptography workbench</h2><p>Choose an algorithm, provide the required data and inspect the workflow.</p></div><span class="status-chip"><i></i> API CONNECTED</span></div>
-      <div class="workbench">
-        <aside class="work-sidebar">
-          <div class="side-label">SELECT ALGORITHM</div>
-          <button class="algorithm-choice active" data-algorithm="aes" type="button"><span class="choice-icon">◈</span><span><b>AES-256-GCM</b><small>Recommended for data</small></span><span class="choice-arrow">↗</span></button>
-          <button class="algorithm-choice" data-algorithm="rsa" type="button"><span class="choice-icon">⌘</span><span><b>RSA</b><small>Public-key cryptography</small></span><span class="choice-arrow">↗</span></button>
-          <button class="algorithm-choice" data-algorithm="hill" type="button"><span class="choice-icon">▦</span><span><b>Hill Cipher</b><small>Classical matrix cipher</small></span><span class="choice-arrow">↗</span></button>
-          <div class="sidebar-note"><span class="note-icon">ⓘ</span><p>Each algorithm requires different key material and input formatting. Select one to see its requirements.</p></div>
-        </aside>
-
-        <div class="work-main">
-          <div class="work-top"><div><span class="work-kicker" id="algo-kicker">SYMMETRIC ENCRYPTION</span><h3 id="algo-title">AES-256-GCM</h3><p id="algo-desc">One shared secret key encrypts and authenticates your data.</p></div><div class="mode-switch" role="group" aria-label="Operation"><button type="button" class="mode-btn active" data-mode="decrypt">Decrypt</button><button type="button" class="mode-btn" data-mode="encrypt">Encrypt</button></div></div>
-
-          <div class="field-grid" id="key-fields">
-            <label class="field full"><span class="field-label">AES SECRET KEY <em>HEX</em></span><input id="aes-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste 64 hexadecimal characters (256-bit key)"><small>32 bytes · Keep this key private. It is not sent anywhere by this preview.</small></label>
-            <label class="field"><span class="field-label">NONCE <em>HEX</em></span><input id="aes-nonce" autocomplete="off" spellcheck="false" placeholder="12-byte nonce"></label>
-            <label class="field"><span class="field-label">AUTHENTICATION TAG <em>HEX</em></span><input id="aes-tag" autocomplete="off" spellcheck="false" placeholder="16-byte tag"></label>
+    <main id="top">
+      <section class="hero wrap">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span> CRYPTOGRAPHY, MADE VISIBLE
           </div>
-
-          <div class="field input-area"><div class="area-heading"><label for="payload" class="field-label" id="payload-label">ENCRYPTED TEXT / CIPHERTEXT <em>INPUT</em></label><span id="char-count">0 characters</span></div><textarea id="payload" spellcheck="false" placeholder="Paste your encrypted text here. For AES-GCM, enter the ciphertext as hexadecimal."></textarea><div class="area-footer"><span><span class="lock-symbol">⌑</span> Input stays in this browser preview</span><button type="button" class="clear-btn" id="clear-input">Clear input ×</button></div></div>
-
-          <div class="field-grid extra-fields" id="extra-fields"></div>
-          <div class="action-row"><button class="button button-light action-button" type="button" id="run-action"><span id="action-label">Decrypt data</span><span>→</span></button><button class="button button-outline" type="button" id="generate-key">Generate key</button><button class="button button-outline" type="button" id="load-example">Load example</button><span class="action-hint" id="action-hint">Connecting to API…</span></div>
-
-          <div class="result-panel" aria-live="polite"><div class="result-head"><div><span class="work-kicker">RESULT</span><h4 id="result-title">Decrypted output</h4></div><span class="result-state" id="result-state">WAITING FOR INPUT</span></div><div class="result-body" id="result-body">Your output will appear here after the operation is connected and completed.</div><div class="result-foot"><span id="result-footnote">No cryptographic operation has been performed.</span><button type="button" class="copy-btn" id="copy-result" disabled>Copy output ↗</button></div></div>
-          <div class="integration-alert"><span>!</span><p><b>Educational cryptography.</b> This workbench sends operations to the local Flask API. RSA uses textbook RSA without padding and Hill cipher is not secure. Do not use this demo to protect sensitive data.</p></div>
+          <h1>Understand the<br /><span>keys to your data.</span></h1>
+          <p class="hero-lede">
+            Explore public-key and symmetric encryption through one focused
+            workspace. Inspect the inputs, understand each step, and learn what
+            protects—or exposes—your information.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-light" href="#workbench"
+              >Open workbench <span>↗</span></a
+            ><a class="text-link" href="#how-it-works"
+              >Explore the process <span>→</span></a
+            >
+          </div>
+          <div class="hero-meta">
+            <span><b>03</b> algorithms</span><span><b>01</b> workspace</span
+            ><span><b>100%</b> learning-focused</span>
+          </div>
         </div>
-      </div>
-    </section>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-a"></div>
+          <div class="orbit orbit-b"></div>
+          <div class="hex hex-outer"></div>
+          <div class="hex hex-mid"></div>
+          <div class="hex hex-inner"></div>
+          <div class="core">K<span>+</span></div>
+          <div class="art-label label-top">KEY PAIR / 01</div>
+          <div class="art-label label-bottom">ENCRYPT → VERIFY → DECRYPT</div>
+        </div>
+      </section>
 
-    <section class="section wrap" id="how-it-works">
-      <div class="section-heading"><div><div class="eyebrow">THE FLOW</div><h2>What happens to your data</h2><p>Three algorithms. Different mathematical approaches. Different security properties.</p></div></div>
-      <div class="process-grid">
-        <article class="process-card"><div class="process-number">01 / RSA</div><div class="process-symbol">⌘</div><h3>Public & private keys</h3><p>A public key is used for encryption and a matching private key is used for decryption. The supplied Python example demonstrates textbook RSA on short messages.</p><div class="mini-flow"><span>PUBLIC KEY</span><b>→</b><span>CIPHERTEXT</span><b>→</b><span>PRIVATE KEY</span></div></article>
-        <article class="process-card"><div class="process-number">02 / AES-GCM</div><div class="process-symbol">◈</div><h3>Encrypt & authenticate</h3><p>A shared 256-bit key and a fresh 12-byte nonce produce ciphertext and a 16-byte authentication tag. The tag is checked before plaintext is released.</p><div class="mini-flow"><span>KEY + NONCE</span><b>→</b><span>CIPHERTEXT</span><b>+</b><span>TAG</span></div></article>
-        <article class="process-card"><div class="process-number">03 / HILL</div><div class="process-symbol">▦</div><h3>Matrix transformation</h3><p>Letters are mapped to numbers, grouped into blocks and multiplied by an invertible key matrix modulo 26. Decryption uses the inverse matrix.</p><div class="mini-flow"><span>TEXT BLOCK</span><b>→</b><span>MATRIX KEY</span><b>→</b><span>LETTER BLOCK</span></div></article>
-      </div>
-      <div class="pipeline"><div class="pipeline-step"><span>01</span><b>Prepare</b><small>Choose algorithm & key</small></div><div class="pipeline-line"></div><div class="pipeline-step"><span>02</span><b>Transform</b><small>Encrypt or decrypt data</small></div><div class="pipeline-line"></div><div class="pipeline-step"><span>03</span><b>Validate</b><small>Verify output & integrity</small></div></div>
-    </section>
+      <section class="algorithm-strip wrap" aria-label="Supported algorithms">
+        <div>
+          <span class="strip-index">01</span><strong>RSA</strong
+          ><small>Asymmetric · Public / Private</small>
+        </div>
+        <div>
+          <span class="strip-index">02</span><strong>AES-256-GCM</strong
+          ><small>Symmetric · Authenticated</small>
+        </div>
+        <div>
+          <span class="strip-index">03</span><strong>HILL CIPHER</strong
+          ><small>Classical · Matrix-based</small>
+        </div>
+      </section>
 
-    <section class="section security-section" id="security"><div class="wrap"><div class="section-heading"><div><div class="eyebrow">SECURITY CHECKLIST</div><h2>Protect the key. Protect the data.</h2><p>Encryption is only as safe as the way keys and inputs are handled.</p></div><span class="security-mark">⌑</span></div>
-      <div class="security-grid">
-        <article><span class="security-icon">◉</span><h3>Never expose private keys</h3><p>Do not paste private keys into public websites, screenshots, chat messages or client-side source code. Keep them on a trusted backend or secure local storage.</p></article>
-        <article><span class="security-icon">↻</span><h3>Never reuse an AES-GCM nonce</h3><p>Generate a fresh unique nonce for every encryption under the same key. Reuse can catastrophically undermine confidentiality and authentication.</p></article>
-        <article><span class="security-icon">✓</span><h3>Verify before trusting output</h3><p>For AES-GCM, reject data if tag verification fails. Never display or use unauthenticated plaintext.</p></article>
-        <article><span class="security-icon">⌁</span><h3>Use modern RSA padding</h3><p>The included RSA code uses textbook RSA without OAEP padding. It is educational only; do not use it to protect real or sensitive data.</p></article>
-        <article><span class="security-icon">▤</span><h3>Do not treat Hill as secure</h3><p>Hill cipher is a classical teaching cipher and is not suitable for protecting confidential information.</p></article>
-        <article><span class="security-icon">⛨</span><h3>Keep secrets out of Git</h3><p>Never commit keys, tokens or decrypted sensitive data. Use environment variables and secret-management tools for server-side credentials.</p></article>
-      </div>
-      <div class="security-callout"><b>Important:</b> The project's README describes this repository as a learning project, not production cryptography. Use vetted protocols and libraries for real-world security.</div>
-    </div></section>
-  </main>
-  <footer class="footer wrap"><a class="brand" href="#top"><span class="brand-mark">⌬</span><span>keygen<span class="brand-dot">.</span></span></a><span>Built for learning · RSA / AES-256-GCM / Hill Cipher</span><a href="#top">Back to top ↑</a></footer>
-  <script src="app.js"></script>
-</body>
+      <section class="section wrap" id="workbench">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">INTERACTIVE WORKSPACE</div>
+            <h2>Cryptography workbench</h2>
+            <p>
+              Choose an algorithm, provide the required data and inspect the
+              workflow.
+            </p>
+          </div>
+          <span class="status-chip"><i></i> API CONNECTED</span>
+        </div>
+        <div class="workbench">
+          <aside class="work-sidebar">
+            <div class="side-label">SELECT ALGORITHM</div>
+            <button
+              class="algorithm-choice active"
+              data-algorithm="aes"
+              type="button"
+            >
+              <span class="choice-icon">◈</span
+              ><span><b>AES-256-GCM</b><small>Recommended for data</small></span
+              ><span class="choice-arrow">↗</span>
+            </button>
+            <button class="algorithm-choice" data-algorithm="rsa" type="button">
+              <span class="choice-icon">⌘</span
+              ><span><b>RSA</b><small>Public-key cryptography</small></span
+              ><span class="choice-arrow">↗</span>
+            </button>
+            <button
+              class="algorithm-choice"
+              data-algorithm="hill"
+              type="button"
+            >
+              <span class="choice-icon">▦</span
+              ><span
+                ><b>Hill Cipher</b><small>Classical matrix cipher</small></span
+              ><span class="choice-arrow">↗</span>
+            </button>
+            <div class="sidebar-note">
+              <span class="note-icon">ⓘ</span>
+              <p>
+                Each algorithm requires different key material and input
+                formatting. Select one to see its requirements.
+              </p>
+            </div>
+          </aside>
+
+          <div class="work-main">
+            <div class="work-top">
+              <div>
+                <span class="work-kicker" id="algo-kicker"
+                  >SYMMETRIC ENCRYPTION</span
+                >
+                <h3 id="algo-title">AES-256-GCM</h3>
+                <p id="algo-desc">
+                  One shared secret key encrypts and authenticates your data.
+                </p>
+              </div>
+              <div class="mode-switch" role="group" aria-label="Operation">
+                <button
+                  type="button"
+                  id="decrypt-rsa"
+                  class="mode-btn active"
+                  data-mode="decrypt"
+                >
+                  Decrypt</button
+                ><button
+                  type="button"
+                  class="mode-btn"
+                  data-mode="encrypt"
+                  id="encrypt-rsa"
+                >
+                  Encrypt
+                </button>
+              </div>
+            </div>
+
+            <div class="field-grid" id="key-fields">
+              <label class="field full"
+                ><span class="field-label">AES SECRET KEY <em>HEX</em></span
+                ><input
+                  id="aes-key"
+                  type="password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="Paste 64 hexadecimal characters (256-bit key)"
+                /><small
+                  >32 bytes · Keep this key private. It is not sent anywhere by
+                  this preview.</small
+                ></label
+              >
+              <label class="field"
+                ><span class="field-label">NONCE <em>HEX</em></span
+                ><input
+                  id="aes-nonce"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="12-byte nonce"
+              /></label>
+              <label class="field"
+                ><span class="field-label">AUTHENTICATION TAG <em>HEX</em></span
+                ><input
+                  id="aes-tag"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="16-byte tag"
+              /></label>
+            </div>
+
+            <div class="field input-area">
+              <div class="area-heading">
+                <label for="payload" class="field-label" id="payload-label"
+                  >ENCRYPTED TEXT / CIPHERTEXT <em>INPUT</em></label
+                ><span id="char-count">0 characters</span>
+              </div>
+              <textarea
+                id="payload"
+                spellcheck="false"
+                placeholder="Paste your encrypted text here. For AES-GCM, enter the ciphertext as hexadecimal."
+              ></textarea>
+              <div class="area-footer">
+                <span
+                  ><span class="lock-symbol">⌑</span> Input stays in this
+                  browser preview</span
+                ><button type="button" class="clear-btn" id="clear-input">
+                  Clear input ×
+                </button>
+              </div>
+            </div>
+
+            <div class="field-grid extra-fields" id="extra-fields"></div>
+            <div class="action-row">
+              <button
+                class="button button-light action-button"
+                type="button"
+                id="run-action"
+              >
+                <span id="action-label">Decrypt data</span
+                ><span>→</span></button
+              ><button
+                class="button button-outline"
+                type="button"
+                id="generate-key"
+              >
+                Generate key</button
+              ><button
+                class="button button-outline"
+                type="button"
+                id="load-example"
+              >
+                Load example</button
+              ><span class="action-hint" id="action-hint"
+                >Connecting to API…</span
+              >
+            </div>
+
+            <div class="result-panel" aria-live="polite">
+              <div class="result-head">
+                <div>
+                  <span class="work-kicker">RESULT</span>
+                  <h4 id="result-title">Decrypted output</h4>
+                </div>
+                <span class="result-state" id="result-state"
+                  >WAITING FOR INPUT</span
+                >
+              </div>
+              <div class="result-body" id="result-body">
+                Your output will appear here after the operation is connected
+                and completed.
+              </div>
+              <div class="result-foot">
+                <span id="result-footnote"
+                  >No cryptographic operation has been performed.</span
+                ><button
+                  type="button"
+                  class="copy-btn"
+                  id="copy-result"
+                  disabled
+                >
+                  Copy output ↗
+                </button>
+              </div>
+            </div>
+            <div class="integration-alert">
+              <span>!</span>
+              <p>
+                <b>Educational cryptography.</b> This workbench sends operations
+                to the local Flask API. RSA uses textbook RSA without padding
+                and Hill cipher is not secure. Do not use this demo to protect
+                sensitive data.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section wrap" id="how-it-works">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">THE FLOW</div>
+            <h2>What happens to your data</h2>
+            <p>
+              Three algorithms. Different mathematical approaches. Different
+              security properties.
+            </p>
+          </div>
+        </div>
+        <div class="process-grid">
+          <article class="process-card">
+            <div class="process-number">01 / RSA</div>
+            <div class="process-symbol">⌘</div>
+            <h3>Public & private keys</h3>
+            <p>
+              A public key is used for encryption and a matching private key is
+              used for decryption. The supplied Python example demonstrates
+              textbook RSA on short messages.
+            </p>
+            <div class="mini-flow">
+              <span>PUBLIC KEY</span><b>→</b><span>CIPHERTEXT</span><b>→</b
+              ><span>PRIVATE KEY</span>
+            </div>
+          </article>
+          <article class="process-card">
+            <div class="process-number">02 / AES-GCM</div>
+            <div class="process-symbol">◈</div>
+            <h3>Encrypt & authenticate</h3>
+            <p>
+              A shared 256-bit key and a fresh 12-byte nonce produce ciphertext
+              and a 16-byte authentication tag. The tag is checked before
+              plaintext is released.
+            </p>
+            <div class="mini-flow">
+              <span>KEY + NONCE</span><b>→</b><span>CIPHERTEXT</span><b>+</b
+              ><span>TAG</span>
+            </div>
+          </article>
+          <article class="process-card">
+            <div class="process-number">03 / HILL</div>
+            <div class="process-symbol">▦</div>
+            <h3>Matrix transformation</h3>
+            <p>
+              Letters are mapped to numbers, grouped into blocks and multiplied
+              by an invertible key matrix modulo 26. Decryption uses the inverse
+              matrix.
+            </p>
+            <div class="mini-flow">
+              <span>TEXT BLOCK</span><b>→</b><span>MATRIX KEY</span><b>→</b
+              ><span>LETTER BLOCK</span>
+            </div>
+          </article>
+        </div>
+        <div class="pipeline">
+          <div class="pipeline-step">
+            <span>01</span><b>Prepare</b><small>Choose algorithm & key</small>
+          </div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step">
+            <span>02</span><b>Transform</b
+            ><small>Encrypt or decrypt data</small>
+          </div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step">
+            <span>03</span><b>Validate</b
+            ><small>Verify output & integrity</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="section security-section" id="security">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">SECURITY CHECKLIST</div>
+              <h2>Protect the key. Protect the data.</h2>
+              <p>
+                Encryption is only as safe as the way keys and inputs are
+                handled.
+              </p>
+            </div>
+            <span class="security-mark">⌑</span>
+          </div>
+          <div class="security-grid">
+            <article>
+              <span class="security-icon">◉</span>
+              <h3>Never expose private keys</h3>
+              <p>
+                Do not paste private keys into public websites, screenshots,
+                chat messages or client-side source code. Keep them on a trusted
+                backend or secure local storage.
+              </p>
+            </article>
+            <article>
+              <span class="security-icon">↻</span>
+              <h3>Never reuse an AES-GCM nonce</h3>
+              <p>
+                Generate a fresh unique nonce for every encryption under the
+                same key. Reuse can catastrophically undermine confidentiality
+                and authentication.
+              </p>
+            </article>
+            <article>
+              <span class="security-icon">✓</span>
+              <h3>Verify before trusting output</h3>
+              <p>
+                For AES-GCM, reject data if tag verification fails. Never
+                display or use unauthenticated plaintext.
+              </p>
+            </article>
+            <article>
+              <span class="security-icon">⌁</span>
+              <h3>Use modern RSA padding</h3>
+              <p>
+                The included RSA code uses textbook RSA without OAEP padding. It
+                is educational only; do not use it to protect real or sensitive
+                data.
+              </p>
+            </article>
+            <article>
+              <span class="security-icon">▤</span>
+              <h3>Do not treat Hill as secure</h3>
+              <p>
+                Hill cipher is a classical teaching cipher and is not suitable
+                for protecting confidential information.
+              </p>
+            </article>
+            <article>
+              <span class="security-icon">⛨</span>
+              <h3>Keep secrets out of Git</h3>
+              <p>
+                Never commit keys, tokens or decrypted sensitive data. Use
+                environment variables and secret-management tools for
+                server-side credentials.
+              </p>
+            </article>
+          </div>
+          <div class="security-callout">
+            <b>Important:</b> The project's README describes this repository as
+            a learning project, not production cryptography. Use vetted
+            protocols and libraries for real-world security.
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer wrap">
+      <a class="brand" href="#top"
+        ><span class="brand-mark">⌬</span
+        ><span>keygen<span class="brand-dot">.</span></span></a
+      ><span>Built for learning · RSA / AES-256-GCM / Hill Cipher</span
+      ><a href="#top">Back to top ↑</a>
+    </footer>
+    <script src="app.js"></script>
+  </body>
 </html>
