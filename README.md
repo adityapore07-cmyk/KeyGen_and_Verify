@@ -36,27 +36,27 @@ The web interface sends operations to the local Flask server. The command-line P
 
 ## Project Structure
 
-| Path / file | Description |
-| --- | --- |
-| `app.py` | Flask application, static frontend server and `/api` endpoints |
-| `frontend/index.html` | Workbench page and explanatory content |
-| `frontend/app.js` | Workbench behavior and API requests |
-| `frontend/styles.css` | Frontend styling |
-| `aes/` | AES-256-GCM key generation, encryption, decryption and tests |
-| `aes/generate_aes.py` | AES key generation |
-| `aes/encrypt_aes.py`, `aes/decrypt_aes.py` | AES-GCM encryption and authenticated decryption |
-| `aes/*_aes.ipynb` | AES notebooks |
-| `aes/test_aes.py` | AES tests |
-| `rsa/` | RSA key generation, encryption and decryption modules and notebooks |
-| `rsa/generate_rsa.py` | RSA key pair generation |
-| `rsa/encrypt_rsa.py`, `rsa/decrypt_rsa.py` | RSA encryption and decryption |
-| `rsa/*_rsa.ipynb` | RSA notebooks |
-| `hill/` | Hill cipher key generation, encryption and decryption modules and notebooks |
-| `hill/generate_hill.py` | Hill key matrix generation and modular inverse helper |
-| `hill/encrypt_hill.py`, `hill/decrypt_hill.py` | Hill cipher encryption and decryption |
-| `hill/*_hill.ipynb` | Hill cipher notebooks |
-| `requirements.txt` | Python package dependencies, including Flask |
-| `LICENSE` | MIT license |
+| Path / file                                    | Description                                                                 |
+| ---------------------------------------------- | --------------------------------------------------------------------------- |
+| `app.py`                                       | Flask application, static frontend server and `/api` endpoints              |
+| `frontend/index.html`                          | Workbench page and explanatory content                                      |
+| `frontend/app.js`                              | Workbench behavior and API requests                                         |
+| `frontend/styles.css`                          | Frontend styling                                                            |
+| `aes/`                                         | AES-256-GCM key generation, encryption, decryption and tests                |
+| `aes/generate_aes.py`                          | AES key generation                                                          |
+| `aes/encrypt_aes.py`, `aes/decrypt_aes.py`     | AES-GCM encryption and authenticated decryption                             |
+| `aes/*_aes.ipynb`                              | AES notebooks                                                               |
+| `aes/test_aes.py`                              | AES tests                                                                   |
+| `rsa/`                                         | RSA key generation, encryption and decryption modules and notebooks         |
+| `rsa/generate_rsa.py`                          | RSA key pair generation                                                     |
+| `rsa/encrypt_rsa.py`, `rsa/decrypt_rsa.py`     | RSA encryption and decryption                                               |
+| `rsa/*_rsa.ipynb`                              | RSA notebooks                                                               |
+| `hill/`                                        | Hill cipher key generation, encryption and decryption modules and notebooks |
+| `hill/generate_hill.py`                        | Hill key matrix generation and modular inverse helper                       |
+| `hill/encrypt_hill.py`, `hill/decrypt_hill.py` | Hill cipher encryption and decryption                                       |
+| `hill/*_hill.ipynb`                            | Hill cipher notebooks                                                       |
+| `requirements.txt`                             | Python package dependencies, including Flask                                |
+| `LICENSE`                                      | MIT license                                                                 |
 
 ---
 
@@ -80,7 +80,7 @@ pip install -r requirements.txt
 git clone https://github.com/adityapore07-cmyk/KeyGen_and_Verify.git
 cd KeyGen_and_Verify
 python3 -m venv .env
-source .env\Scripts\activate
+source .env/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -112,7 +112,7 @@ python app.py
 #### MacOS
 
 ```bash
-source .env\Scripts\activate
+source .env/bin/activate
 python3 app.py
 ```
 
@@ -179,12 +179,12 @@ If the ciphertext, nonce or tag is changed in any way, decryption raises a `Valu
 
 All operation endpoints accept and return JSON. The browser uses the same paths listed here.
 
-| Method and path | Purpose |
-| --- | --- |
-| `GET /api/health` | Check that the server is running and list supported algorithms |
-| `POST /api/<algorithm>/keygen` | Generate key material |
-| `POST /api/<algorithm>/encrypt` | Encrypt plaintext |
-| `POST /api/<algorithm>/decrypt` | Decrypt ciphertext |
+| Method and path                 | Purpose                                                        |
+| ------------------------------- | -------------------------------------------------------------- |
+| `GET /api/health`               | Check that the server is running and list supported algorithms |
+| `POST /api/<algorithm>/keygen`  | Generate key material                                          |
+| `POST /api/<algorithm>/encrypt` | Encrypt plaintext                                              |
+| `POST /api/<algorithm>/decrypt` | Decrypt ciphertext                                             |
 
 Replace `<algorithm>` with `aes`, `rsa` or `hill`. Key generation accepts optional `bits` for AES (128, 192 or 256) and RSA (1024–4096, in multiples of 256), or optional `size` for Hill (2–8). For example:
 
